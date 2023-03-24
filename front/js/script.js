@@ -1,51 +1,41 @@
 
 
-// Récupération des articles de l'API
-async function getArticles() {
-    var articlesCatch = await fetch("http://localhost:3000/api/products")
-    return await articlesCatch.json();
-}
+function affichageProduits(){
+    fetch('http://localhost:3000/api/products')
+        .then(res => res.json())
+        .then (function(data){
+            for (let produit in data) {
+    
+                let a = document.createElement("a");
+                document.querySelector(".items").appendChild(a);
+                a.href = `./product.html?id=${data[produit]._id}`;
+                
+                let article = document.createElement("article");
+                a.appendChild(article);
+                
+                let img = document.createElement("img");
+                article.appendChild(img);
+                img.src = data[produit].imageUrl;
+                img.alt = data[produit].altTxt;
+                
+                let h3 = document.createElement("h3"); 
+                article.appendChild(h3); 
+                h3.className = "productName"; 
+                h3.innerText = data[produit].name; 
+                
+                let p = document.createElement("p"); 
+                article.appendChild(p); 
+                p.className = "productDescription"; 
+                p.innerText = data[produit].description; 
+                };
+            })
+        .catch(function(error){
+            let erreur = document.getElementById("items");
+            erreur.innerText = "Une erreur s'est produite";
+        });       
+};
 
-fillSection();
+affichageProduits();
 
-    // Répartition des données de l'API dans le DOM
-async function fillSection() {
-    var result = await getArticles()
-    .then(function (resultatAPI){
-        const artTab = resultatAPI;
-        console.table(artTab);
-        
-        for (let article in artTab) {
 
-            // Insertion de l'élément "a"
-            let productLink = document.createElement("a");
-            document.querySelector(".items").appendChild(productLink);
-            productLink.href = `product.html?id=${resultatAPI[article]._id}`;
 
-            // Insertion de l'élément "article"
-            let productArticle = document.createElement("article");
-            productLink.appendChild(productArticle);
-
-            // Insertion de l'image
-            let productImg = document.createElement("img");
-            productArticle.appendChild(productImg);
-            productImg.src = resultatAPI[article].imageUrl;
-            productImg.alt = resultatAPI[article].altTxt;
-
-            // Insertion du titre "h3"
-            let productName = document.createElement("h3");
-            productArticle.appendChild(productName);
-            productName.classList.add("productName");
-            productName.innerHTML = resultatAPI[article].name;
-
-            // Insertion de la description "p"
-            let productDescription = document.createElement("p");
-            productArticle.appendChild(productDescription);
-            productDescription.classList.add("productName");
-            productDescription.innerHTML = resultatAPI[article].description;
-        }
-    })
-    .catch (function(error){
-        return error;
-    });
-}
